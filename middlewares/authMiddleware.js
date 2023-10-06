@@ -1,39 +1,29 @@
-// middlewares/authMiddleware.js
-
+//middlewares/authMiddleware.js
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
-const requireAuth = async (req, res, next) => {
-  const token = req.header("x-auth-token");
+const requireAuth = (req, res, next) => {
+  const token = req.headers.authorization;
 
   if (!token) {
-    return res
-      .status(401)
-      .json({ success: false, message: "Unauthorized: No token provided" });
+    return res.status(401).json({ success: false, message: "Unauthorized" });
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.SESSION_SECRET);
-    const user = await User.findById(decoded.userId);
-
-    if (!user) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Unauthorized: Invalid user" });
+  jwt.verify(token, process.env.SESSION_SECRET, async (err, decodedToken) => {
+    if (err) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
-    req.user = {
-      userId: user._id,
-      email: user.email, // Include any other user properties you need
-    };
+    // Fetch user from the database using the decoded token
+    const user = await User.findById(decodedToken.userId);
 
+    if (!user) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    req.user = { userId: user._id, email: user.email }; // Set user information on the req object
     next();
-  } catch (error) {
-    console.error("Error: ", error);
-    return res
-      .status(401)
-      .json({ success: false, message: "Unauthorized: Invalid token" });
-  }
+  });
 };
 
 module.exports = { requireAuth };
