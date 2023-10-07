@@ -1,4 +1,3 @@
-// middlewares/cacheMiddleware.js
 const cache = {};
 
 const cacheMiddleware = (req, res, next) => {

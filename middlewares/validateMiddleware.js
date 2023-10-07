@@ -1,4 +1,3 @@
-// middlewares/validateMiddleware.js
 const { check, validationResult } = require("express-validator");
 
 const validateRegisterInput = [
@@ -23,7 +22,6 @@ const validateLoginInput = [
 const validateScholarshipInput = [
   check("title").notEmpty().withMessage("Title is required"),
   check("description").notEmpty().withMessage("Description is required"),
-  // Add more validation rules for scholarship data
 ];
 
 const handleValidationErrors = (req, res, next) => {

@@ -14,14 +14,13 @@ const requireAuth = (req, res, next) => {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
-    // Fetch user from the database using the decoded token
     const user = await User.findById(decodedToken.userId);
 
     if (!user) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
-    req.user = { userId: user._id, email: user.email }; // Set user information on the req object
+    req.user = { userId: user._id, email: user.email };
     next();
   });
 };

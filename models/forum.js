@@ -1,4 +1,3 @@
-// models/forum.js
 const mongoose = require("mongoose");
 
 const commentSchema = new mongoose.Schema({

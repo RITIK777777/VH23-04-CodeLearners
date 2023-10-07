@@ -1,4 +1,3 @@
-// models/gamification.js
 const mongoose = require("mongoose");
 
 const gamificationSchema = new mongoose.Schema({
@@ -27,7 +26,6 @@ const gamificationSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  // Add any other fields you need for gamification
 });
 
 module.exports = mongoose.model("Gamification", gamificationSchema);

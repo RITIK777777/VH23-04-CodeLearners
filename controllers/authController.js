@@ -12,7 +12,7 @@ const authController = {
     try {
       const { name, email, password } = req.body;
 
-      // Check if user already exists
+      // Checking if user already exists
       const userExists = await User.findOne({ email });
       if (userExists) {
         return res
@@ -20,14 +20,14 @@ const authController = {
           .json({ success: false, message: "Email already exists" });
       }
 
-      // Hash the password
+      // Hashing the password
       const hashedPassword = await bcrypt.hash(password, 12);
 
-      // Create a new user
+      // Creating a new user
       const newUser = new User({ name, email, password: hashedPassword });
       const savedUser = await newUser.save();
 
-      // Generate JWT token
+      // Generating JWT token
       const token = jwt.sign({ userId: savedUser._id }, process.env.JWT_SECRET);
 
       return res.status(201).json({
@@ -48,7 +48,7 @@ const authController = {
     try {
       const { email, password } = req.body;
 
-      // Find the user by email
+      // Finding the user by email
       const user = await User.findOne({ email });
 
       if (!user) {
@@ -57,7 +57,7 @@ const authController = {
           .json({ success: false, message: "User not found" });
       }
 
-      // Compare the password using bcrypt
+      // Comparing the password using bcrypt
       const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (!isPasswordValid) {
@@ -66,7 +66,7 @@ const authController = {
           .json({ success: false, message: "Invalid password" });
       }
 
-      // Generate JWT token
+      // Generating JWT token
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
 
       return res
@@ -109,7 +109,7 @@ const authController = {
   updateUserProfile: async (req, res) => {
     try {
       const { educationalBackground, interests } = req.body;
-      const userId = req.user.userId; // Extracted from the JWT token in the authentication middleware
+      const userId = req.user.userId;
 
       const updatedUser = await User.findByIdAndUpdate(
         userId,

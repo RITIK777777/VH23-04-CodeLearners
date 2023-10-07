@@ -1,7 +1,6 @@
-// controllers/scholarshipController.js
-const Scholarship = require("../models/scholarship");
+const scholarship = require("../models/scholarship");
+// const Scholarship = require("../models/scholarship");
 
-// Create Scholarship
 exports.createScholarship = async (req, res) => {
   try {
     const { title, description, eligibilityCriteria } = req.body;
@@ -12,7 +11,6 @@ exports.createScholarship = async (req, res) => {
         .json({ success: false, message: "All fields are required" });
     }
 
-    // Create a new scholarship
     const scholarship = new Scholarship({
       title,
       description,
@@ -31,7 +29,6 @@ exports.createScholarship = async (req, res) => {
   }
 };
 
-// Get All Scholarships
 exports.getAllScholarships = async (req, res) => {
   try {
     const scholarships = await Scholarship.find();
@@ -46,7 +43,6 @@ exports.getAllScholarships = async (req, res) => {
   }
 };
 
-// Get Scholarship by ID
 exports.getScholarshipById = async (req, res) => {
   const { scholarshipId } = req.params;
 
@@ -70,7 +66,6 @@ exports.getScholarshipById = async (req, res) => {
   }
 };
 
-// Update Scholarship by ID
 exports.updateScholarshipById = async (req, res) => {
   const { scholarshipId } = req.params;
   const { title, description, eligibilityCriteria } = req.body;
@@ -84,7 +79,6 @@ exports.updateScholarshipById = async (req, res) => {
         .json({ success: false, message: "Scholarship not found" });
     }
 
-    // Update scholarship fields
     scholarship.title = title;
     scholarship.description = description;
     scholarship.eligibilityCriteria = eligibilityCriteria;
@@ -101,7 +95,6 @@ exports.updateScholarshipById = async (req, res) => {
   }
 };
 
-// Delete Scholarship by ID
 exports.deleteScholarshipById = async (req, res) => {
   const { scholarshipId } = req.params;
 
@@ -130,7 +123,7 @@ exports.deleteScholarshipById = async (req, res) => {
 
 exports.getPersonalizedRecommendations = async (req, res) => {
   try {
-    const userId = req.user.userId; // Extracted from the JWT token in the authentication middleware
+    const userId = req.user.userId;
     const user = await User.findById(userId);
 
     if (!user) {
@@ -141,12 +134,11 @@ exports.getPersonalizedRecommendations = async (req, res) => {
 
     const userInterests = user.interests;
 
-    // Find scholarships with shared interests
     const recommendedScholarships = await Scholarship.find({
       category: { $in: userInterests },
     })
-      .sort({ createdAt: -1 }) // You can adjust the sorting logic based on your requirements
-      .limit(5); // Limit the number of recommendations
+      .sort({ createdAt: -1 })
+      .limit(5);
 
     res.status(200).json({ success: true, recommendedScholarships });
   } catch (error) {
@@ -170,6 +162,26 @@ exports.getScholarshipsForMap = async (req, res) => {
       success: false,
       message: "Error in getting scholarships for map",
       error: error.message,
+    });
+  }
+};
+
+exports.searchProductController = async (req, res) => {
+  try {
+    const { keyword } = req.params;
+    const resutls = await scholarship.find({
+      $or: [
+        { name: { $regex: keyword, $options: "i" } },
+        { description: { $regex: keyword, $options: "i" } },
+      ],
+    });
+    res.json(resutls);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      success: false,
+      message: "Error In Search Product API",
+      error,
     });
   }
 };
